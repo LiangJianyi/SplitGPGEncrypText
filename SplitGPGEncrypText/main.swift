@@ -4,6 +4,7 @@ enum SplitGPGEncrypTextError: Error {
     case missingArgument(argumentName: String)
     case missingArguments(argumentNames: [String])
     case invalidArguments(argumentNames: [String])
+    case invalidFileUrl(path: String)
     case readFileURLIsNull
     case writeFileURLIsNull
 }
@@ -45,13 +46,13 @@ struct SplitGPGEncrypText {
         }
     }
     
-    private func checkTargetName(url: URL, targetName: String) -> Bool {
+    private func checkTargetName(url: URL, directoryName: String) -> Bool {
         if url.pathComponents.count == 5 {
             if url.pathComponents[0] == "/" {
                 if url.pathComponents[1] == "Users" {
                     if url.pathComponents[2] == NSUserName() {
                         if url.pathComponents[3] == "Desktop" {
-                            if url.pathComponents[4] == targetName {
+                            if url.pathComponents[4] == directoryName {
                                 return true
                             }
                         }
@@ -67,18 +68,23 @@ struct SplitGPGEncrypText {
     private func createDirectory(baseUrlWithPath: String, directoryName: String) throws -> URL {
         var dirUrl = URL(fileURLWithPath: baseUrlWithPath, isDirectory: true)
         dirUrl.appendPathComponent(directoryName, isDirectory: true)
-        if FileManager.default.fileExists(atPath: dirUrl.path) {
-            return dirUrl
+        if checkTargetName(url: dirUrl, directoryName: directoryName) {
+            if FileManager.default.fileExists(atPath: dirUrl.path) {
+                return dirUrl
+            } else {
+                try FileManager.default.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
+                return dirUrl
+            }
         } else {
-            try FileManager.default.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
-            return dirUrl
+            throw SplitGPGEncrypTextError.invalidFileUrl(path: dirUrl.absoluteString)
         }
     }
     
-    func splitTextWriteToFiles(text: String, separator: Character, splitLineNumber: Int, baseDirPath: String) throws {
+    private func splitTextWriteToFiles(text: String, separator: Character) throws {
         let textLines = text.split(separator: "\n")
         let linesTotal = textLines.count
         let baseUrl = try createDirectory(baseUrlWithPath: baseDirPath, directoryName: "tmp")
+        var splitLineNumber = self.splitLineNumbers ?? 3
         if linesTotal % splitLineNumber > 0 {
             let splitFileTotal = linesTotal / splitLineNumber + 1
             var lineIndex = 0
@@ -121,25 +127,30 @@ struct SplitGPGEncrypText {
         }
     }
     
-    func readTextFromFile(encoding: String.Encoding = .ascii) throws -> String {
+    private func readTextFromFile(encoding: String.Encoding = .ascii) throws -> String {
         if let readUrl = self.readFileURL {
             return try String(contentsOf: URL(fileURLWithPath: readUrl), encoding: encoding)
         } else {
             throw SplitGPGEncrypTextError.readFileURLIsNull
         }
     }
+    
+    func run() {
+        do {
+            let fileText = try readTextFromFile()
+            printLog("访问 demo.txt：\n\(fileText)")
+            try splitTextWriteToFiles(text: fileText, separator: "\n")
+        } catch SplitGPGEncrypTextError.readFileURLIsNull {
+            print("Please input read file url.")
+        } catch {
+            print("Unkown error: \(error.localizedDescription)")
+        }
+    }
 }
 
 
-//let fileText = try readTextFromFile(url: READ_FILE_URL)
-//printLog("访问 demo.txt：\n\(fileText)")
-//if let n = SPLIT_LINE_NUMBERS {
-//    try splitTextWriteToFiles(text: fileText, separator: "\n", splitLineNumber: n)
-//} else {
-//    try splitTextWriteToFiles(text: fileText, separator: "\n", splitLineNumber: 3)
-//}
 
-let splitGpg = try SplitGPGEncrypText()
-let fileText = try splitGpg.readTextFromFile()
-try splitGpg.splitTextWriteToFiles(text: fileText, separator: "\n", splitLineNumber: 3)
+// SplitGPGEncrypText <read_file_path> <output_dir_path> <printlog> <split_line_number>
+let splitGpg = try SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", "/Users/jianyiliang/Desktop/demo.txt", "/Users/jianyiliang/Desktop/tmp/", "printlog", "3"])
+splitGpg.run()
 
