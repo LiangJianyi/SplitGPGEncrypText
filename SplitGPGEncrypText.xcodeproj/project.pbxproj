@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		241D7BDB2600B23600E90A74 /* SplitGPGEncrypText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241D7BDA2600B23600E90A74 /* SplitGPGEncrypText.swift */; };
+		241D7BDC2600B23600E90A74 /* SplitGPGEncrypText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241D7BDA2600B23600E90A74 /* SplitGPGEncrypText.swift */; };
 		24A1417E25F92653005D2BBD /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A1417D25F92653005D2BBD /* main.swift */; };
 		24A1418C25FE8032005D2BBD /* SplitGPGEncrypTextTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A1418B25FE8032005D2BBD /* SplitGPGEncrypTextTest.swift */; };
 /* End PBXBuildFile section */
@@ -24,6 +26,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		241D7BDA2600B23600E90A74 /* SplitGPGEncrypText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitGPGEncrypText.swift; sourceTree = "<group>"; };
 		24A1417A25F92653005D2BBD /* SplitGPGEncrypText */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SplitGPGEncrypText; sourceTree = BUILT_PRODUCTS_DIR; };
 		24A1417D25F92653005D2BBD /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		24A1418925FE8032005D2BBD /* SplitGPGEncrypTextTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SplitGPGEncrypTextTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,6 +74,7 @@
 			isa = PBXGroup;
 			children = (
 				24A1417D25F92653005D2BBD /* main.swift */,
+				241D7BDA2600B23600E90A74 /* SplitGPGEncrypText.swift */,
 			);
 			path = SplitGPGEncrypText;
 			sourceTree = "<group>";
@@ -173,6 +177,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				24A1417E25F92653005D2BBD /* main.swift in Sources */,
+				241D7BDB2600B23600E90A74 /* SplitGPGEncrypText.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,6 +186,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				24A1418C25FE8032005D2BBD /* SplitGPGEncrypTextTest.swift in Sources */,
+				241D7BDC2600B23600E90A74 /* SplitGPGEncrypText.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

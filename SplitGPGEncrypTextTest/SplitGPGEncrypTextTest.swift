@@ -1,4 +1,5 @@
 import XCTest
+import SplitGPGEncrypText
 
 class SplitGPGEncrypTextTest: XCTestCase {
 
@@ -11,9 +12,8 @@ class SplitGPGEncrypTextTest: XCTestCase {
     }
 
     func testExample() throws {
-        let splitGpg = try SplitGPGEncrypText()
-        let fileText = try splitGpg.readTextFromFile(url: "/Users/jianyiliang/Desktop/demo.txt")
-        try splitGpg.splitTextWriteToFiles(text: fileText, separator: "\n", splitLineNumber: 3, baseDirPath: "/Users/jianyiliang/Desktop")
+        let splitGpg = try SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", "/Users/jianyiliang/Desktop/demo.txt", "/Users/jianyiliang/Desktop/tmp/", "printlog", "3"])
+        splitGpg.run()
     }
 
     func testPerformanceExample() throws {
