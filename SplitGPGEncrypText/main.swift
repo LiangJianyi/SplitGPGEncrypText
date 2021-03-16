@@ -46,51 +46,48 @@ struct SplitGPGEncrypText {
         }
     }
     
-    private func checkTargetName(url: URL, directoryName: String) -> Bool {
+    private func parsePath(path: String) throws -> (basePath: String, directoryName: String) {
+        let url = URL(fileURLWithPath: path)
         if url.pathComponents.count == 5 {
             if url.pathComponents[0] == "/" {
                 if url.pathComponents[1] == "Users" {
                     if url.pathComponents[2] == NSUserName() {
                         if url.pathComponents[3] == "Desktop" {
-                            if url.pathComponents[4] == directoryName {
-                                return true
+                            if url.pathComponents[4].count > 0 {
+                                return (basePath: url.pathComponents[0] + url.pathComponents[1] + url.pathComponents[2] + url.pathComponents[3],
+                                        directoryName: url.pathComponents[4])
                             }
                         }
                     }
                 }
             }
-            return false
-        } else {
-            return false
         }
+        throw SplitGPGEncrypTextError.invalidFileUrl(path: path)
     }
     
-    private func createDirectory(baseUrlWithPath: String, directoryName: String) throws -> URL {
-        var dirUrl = URL(fileURLWithPath: baseUrlWithPath, isDirectory: true)
+    private func createDirectory(path: String) throws -> URL {
+        let (basePath, directoryName) = try parsePath(path: path)
+        var dirUrl = URL(fileURLWithPath: basePath, isDirectory: true)
         dirUrl.appendPathComponent(directoryName, isDirectory: true)
-        if checkTargetName(url: dirUrl, directoryName: directoryName) {
-            if FileManager.default.fileExists(atPath: dirUrl.path) {
-                return dirUrl
-            } else {
-                try FileManager.default.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
-                return dirUrl
-            }
+        if FileManager.default.fileExists(atPath: dirUrl.path) {
+            return dirUrl
         } else {
-            throw SplitGPGEncrypTextError.invalidFileUrl(path: dirUrl.absoluteString)
+            try FileManager.default.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
+            return dirUrl
         }
     }
     
     private func splitTextWriteToFiles(text: String, separator: Character) throws {
         let textLines = text.split(separator: "\n")
         let linesTotal = textLines.count
-        let baseUrl = try createDirectory(baseUrlWithPath: baseDirPath, directoryName: "tmp")
-        var splitLineNumber = self.splitLineNumbers ?? 3
+        let targetUrl = try createDirectory(path: self.writeDirURL!)
+        let splitLineNumber = self.splitLineNumbers ?? 3
         if linesTotal % splitLineNumber > 0 {
             let splitFileTotal = linesTotal / splitLineNumber + 1
             var lineIndex = 0
             for i in 0..<splitFileTotal {
                 let filename = "en_\(i + 1).txt"
-                var fileUrl = baseUrl
+                var fileUrl = targetUrl
                 fileUrl.appendPathComponent(filename)
                 var text = ""
                 if i < splitFileTotal - 1 {
@@ -114,7 +111,7 @@ struct SplitGPGEncrypText {
             var lineIndex = 0
             for i in 0..<splitFileTotal {
                 let filename = "en_\(i + 1).txt"
-                var fileUrl = baseUrl
+                var fileUrl = targetUrl
                 fileUrl.appendPathComponent(filename)
                 var text = ""
                 for _ in 1...splitLineNumber {
