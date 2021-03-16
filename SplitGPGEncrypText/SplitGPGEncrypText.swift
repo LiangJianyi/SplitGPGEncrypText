@@ -54,7 +54,11 @@ struct SplitGPGEncrypText {
                     if url.pathComponents[2] == NSUserName() {
                         if url.pathComponents[3] == "Desktop" {
                             if url.pathComponents[4].count > 0 {
-                                return (basePath: url.pathComponents[0] + url.pathComponents[1] + url.pathComponents[2] + url.pathComponents[3],
+                                var bPath = URL(fileURLWithPath: url.pathComponents[0])
+                                bPath.appendPathComponent(url.pathComponents[1])
+                                bPath.appendPathComponent(url.pathComponents[2])
+                                bPath.appendPathComponent(url.pathComponents[3])
+                                return (basePath: bPath.path,
                                         directoryName: url.pathComponents[4])
                             }
                         }
