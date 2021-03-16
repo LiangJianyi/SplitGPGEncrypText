@@ -46,7 +46,7 @@ struct SplitGPGEncrypText {
         }
     }
     
-    private func parsePath(path: String) throws -> (basePath: String, directoryName: String) {
+    public func parsePath(path: String) throws -> (basePath: String, directoryName: String) {
         let url = URL(fileURLWithPath: path)
         if url.pathComponents.count == 5 {
             if url.pathComponents[0] == "/" {
@@ -65,7 +65,7 @@ struct SplitGPGEncrypText {
         throw SplitGPGEncrypTextError.invalidFileUrl(path: path)
     }
     
-    private func createDirectory(path: String) throws -> URL {
+    public func createDirectory(path: String) throws -> URL {
         let (basePath, directoryName) = try parsePath(path: path)
         var dirUrl = URL(fileURLWithPath: basePath, isDirectory: true)
         dirUrl.appendPathComponent(directoryName, isDirectory: true)
@@ -77,7 +77,7 @@ struct SplitGPGEncrypText {
         }
     }
     
-    private func splitTextWriteToFiles(text: String, separator: Character) throws {
+    public func splitTextWriteToFiles(text: String, separator: Character) throws {
         let textLines = text.split(separator: "\n")
         let linesTotal = textLines.count
         let targetUrl = try createDirectory(path: self.writeDirURL!)
@@ -124,7 +124,7 @@ struct SplitGPGEncrypText {
         }
     }
     
-    private func readTextFromFile(encoding: String.Encoding = .ascii) throws -> String {
+    public func readTextFromFile(encoding: String.Encoding = .ascii) throws -> String {
         if let readUrl = self.readFileURL {
             return try String(contentsOf: URL(fileURLWithPath: readUrl), encoding: encoding)
         } else {
@@ -132,7 +132,7 @@ struct SplitGPGEncrypText {
         }
     }
     
-    func run() {
+    public func run() {
         do {
             let fileText = try readTextFromFile()
             printLog("访问 demo.txt：\n\(fileText)")
@@ -148,6 +148,8 @@ struct SplitGPGEncrypText {
 
 
 // SplitGPGEncrypText <read_file_path> <output_dir_path> <printlog> <split_line_number>
-let splitGpg = try SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", "/Users/jianyiliang/Desktop/demo.txt", "/Users/jianyiliang/Desktop/tmp/", "printlog", "3"])
+//let splitGpg = try SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", "/Users/jianyiliang/Desktop/demo.txt", "/Users/jianyiliang/Desktop/tmp/", "printlog", "3"])
+
+let splitGpg = try SplitGPGEncrypText(arguments: CommandLine.arguments)
 splitGpg.run()
 
