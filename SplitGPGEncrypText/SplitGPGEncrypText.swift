@@ -10,8 +10,8 @@ enum SplitGPGEncrypTextError: Error {
 }
 
 struct SplitGPGEncrypText {
-    private var readFileURL: String?
-    private var writeDirURL: String?
+    private var readFilePath: String?
+    private var writeDirPath: String?
     private var printLogSwitch: String?
     private var splitLineNumbers: Int?
     
@@ -20,19 +20,19 @@ struct SplitGPGEncrypText {
     init(arguments: [String] = CommandLine.arguments) throws {
         switch arguments.count {
         case 1:
-            throw SplitGPGEncrypTextError.missingArguments(argumentNames: ["read_file_url", "write_dir_url"])
+            throw SplitGPGEncrypTextError.missingArguments(argumentNames: ["read_file_path", "write_dir_path"])
         case 2:
-            throw SplitGPGEncrypTextError.missingArgument(argumentName: "write_dir_url")
+            throw SplitGPGEncrypTextError.missingArgument(argumentName: "write_dir_path")
         case 3:
-            self.readFileURL = arguments[1]
-            self.writeDirURL = arguments[2]
+            self.readFilePath = arguments[1]
+            self.writeDirPath = arguments[2]
         case 4:
-            self.readFileURL = arguments[1]
-            self.writeDirURL = arguments[2]
+            self.readFilePath = arguments[1]
+            self.writeDirPath = arguments[2]
             self.printLogSwitch = arguments[3]
         case 5:
-            self.readFileURL = arguments[1]
-            self.writeDirURL = arguments[2]
+            self.readFilePath = arguments[1]
+            self.writeDirPath = arguments[2]
             self.printLogSwitch = arguments[3]
             self.splitLineNumbers = Int(arguments[4])
         default:
@@ -80,7 +80,7 @@ struct SplitGPGEncrypText {
     public func splitTextWriteToFiles(text: String, separator: Character) throws {
         let textLines = text.split(separator: "\n")
         let linesTotal = textLines.count
-        let targetUrl = try createDirectory(path: self.writeDirURL!)
+        let targetUrl = try createDirectory(path: self.writeDirPath!)
         let splitLineNumber = self.splitLineNumbers ?? 3
         if linesTotal % splitLineNumber > 0 {
             let splitFileTotal = linesTotal / splitLineNumber + 1
@@ -125,7 +125,7 @@ struct SplitGPGEncrypText {
     }
     
     public func readTextFromFile(encoding: String.Encoding = .ascii) throws -> String {
-        if let readUrl = self.readFileURL {
+        if let readUrl = self.readFilePath {
             return try String(contentsOf: URL(fileURLWithPath: readUrl), encoding: encoding)
         } else {
             throw SplitGPGEncrypTextError.readFileURLIsNull
@@ -135,12 +135,12 @@ struct SplitGPGEncrypText {
     public func run() {
         do {
             let fileText = try readTextFromFile()
-            printLog("访问 \(URL(fileURLWithPath: readFileURL!).pathComponents.last!)：\n\(fileText)")
+            printLog("访问 \(URL(fileURLWithPath: self.readFilePath!).pathComponents.last!)")
             try splitTextWriteToFiles(text: fileText, separator: "\n")
         } catch SplitGPGEncrypTextError.readFileURLIsNull {
-            print("Please input read file url.")
+            print("Read file url is null.")
         } catch {
-            print("Unkown error: \(error.localizedDescription)")
+            print("Running SplitGPGEncrypText throw an unkown error: \(error.localizedDescription)")
         }
     }
 }
