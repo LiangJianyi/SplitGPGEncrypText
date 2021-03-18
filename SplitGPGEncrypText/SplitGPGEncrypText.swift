@@ -46,7 +46,7 @@ struct SplitGPGEncrypText {
         }
     }
     
-    public func parsePath(path: String) throws -> (basePath: String, directoryName: String) {
+    public static func parsePath(path: String) throws -> (basePath: String, targetName: String) {
         let url = URL(fileURLWithPath: path)
         if url.pathComponents.count == 5 {
             if url.pathComponents[0] == "/" {
@@ -59,7 +59,7 @@ struct SplitGPGEncrypText {
                                 bPath.appendPathComponent(url.pathComponents[2])
                                 bPath.appendPathComponent(url.pathComponents[3])
                                 return (basePath: bPath.path,
-                                        directoryName: url.pathComponents[4])
+                                        targetName: url.pathComponents[4])
                             }
                         }
                     }
@@ -69,7 +69,7 @@ struct SplitGPGEncrypText {
         throw SplitGPGEncrypTextError.invalidFileUrl(path: path)
     }
     
-    public func createDirectory(path: String) throws -> URL {
+    public static func createDirectory(path: String) throws -> URL {
         let (basePath, directoryName) = try parsePath(path: path)
         var dirUrl = URL(fileURLWithPath: basePath, isDirectory: true)
         dirUrl.appendPathComponent(directoryName, isDirectory: true)
@@ -84,7 +84,7 @@ struct SplitGPGEncrypText {
     public func splitTextWriteToFiles(text: String, separator: Character) throws {
         let textLines = text.split(separator: "\n")
         let linesTotal = textLines.count
-        let targetUrl = try createDirectory(path: self.writeDirPath!)
+        let targetUrl = try SplitGPGEncrypText.createDirectory(path: self.writeDirPath!)
         let splitLineNumber = self.splitLineNumbers ?? 3
         if linesTotal % splitLineNumber > 0 {
             let splitFileTotal = linesTotal / splitLineNumber + 1
