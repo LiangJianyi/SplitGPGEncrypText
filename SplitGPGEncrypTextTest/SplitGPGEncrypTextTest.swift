@@ -35,19 +35,42 @@ final class SplitGPGEncrypTextTest: XCTestCase {
             XCTAssertNoThrow(try FileManager.default.removeItem(at: URL(fileURLWithPath: item)))
         }
     }
+    
+    private func sortContentOfDirectory(dirPath: String) -> [String] {
+        var arr = try! FileManager.default.contentsOfDirectory(atPath: dirPath)
+        arr.sort()
+        arr = arr.map{ e in
+            var res = URL(fileURLWithPath: dirPath).appendingPathComponent(e).absoluteString
+            res.removeFirst(7)
+            return res
+        }
+        return arr
+    }
+    
+    private func combineEncrypText() {
+        
+    }
 
+    let inputFilePath = "/Users/jianyiliang/Desktop/demo.txt"
+    let outputDirPath = "/Users/jianyiliang/Desktop/tmp/"
+    
     func testSplitGPGEncrypTextRun1() {
-        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", "/Users/jianyiliang/Desktop/demo.txt", "/Users/jianyiliang/Desktop/tmp/", "printlog", "3"])
+        let splitLineNumber = 3
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
+                                                           inputFilePath,
+                                                           outputDirPath,
+                                                           "printlog",
+                                                           String(describing: splitLineNumber)])
         XCTAssertNoThrow(splitGpg.run())
     }
     
     func testSplitGPGEncrypTextRun2() {
-        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", "/Users/jianyiliang/Desktop/demo.txt", "/Users/jianyiliang/Desktop/tmp/", "printlog", "10"])
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", inputFilePath, outputDirPath, "printlog", "10"])
         XCTAssertNoThrow(splitGpg.run())
     }
     
     func testSplitGPGEncrypTextRun3() {
-        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", "/Users/jianyiliang/Desktop/demo.txt", "/Users/jianyiliang/Desktop/tmp/", "printlog", "100"])
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", inputFilePath, outputDirPath, "printlog", "100"])
         XCTAssertNoThrow(splitGpg.run())
     }
 }
