@@ -2,11 +2,6 @@ import XCTest
 @testable import SplitGPGEncrypText
 
 final class SplitGPGEncrypTextTest: XCTestCase {
-    func testSplitGPGEncrypTextRun() {
-        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", "/Users/jianyiliang/Desktop/demo.txt", "/Users/jianyiliang/Desktop/tmp/", "printlog", "3"])
-        XCTAssertNoThrow(splitGpg.run())
-    }
-    
     /*
      检测那些目录属于Desktop下的子目录
      */
@@ -41,9 +36,18 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         }
     }
 
-    func testFuck() {
-        print("fuck you")
-        XCTAssertFalse(1 == 2)
+    func testSplitGPGEncrypTextRun1() {
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", "/Users/jianyiliang/Desktop/demo.txt", "/Users/jianyiliang/Desktop/tmp/", "printlog", "3"])
+        XCTAssertNoThrow(splitGpg.run())
     }
-
+    
+    func testSplitGPGEncrypTextRun2() {
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", "/Users/jianyiliang/Desktop/demo.txt", "/Users/jianyiliang/Desktop/tmp/", "printlog", "10"])
+        XCTAssertNoThrow(splitGpg.run())
+    }
+    
+    func testSplitGPGEncrypTextRun3() {
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", "/Users/jianyiliang/Desktop/demo.txt", "/Users/jianyiliang/Desktop/tmp/", "printlog", "100"])
+        XCTAssertNoThrow(splitGpg.run())
+    }
 }

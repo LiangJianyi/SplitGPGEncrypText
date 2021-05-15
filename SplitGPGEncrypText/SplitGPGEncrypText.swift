@@ -74,6 +74,8 @@ struct SplitGPGEncrypText {
         var dirUrl = URL(fileURLWithPath: basePath, isDirectory: true)
         dirUrl.appendPathComponent(directoryName, isDirectory: true)
         if FileManager.default.fileExists(atPath: dirUrl.path) {
+            try FileManager.default.removeItem(at: dirUrl)
+            try FileManager.default.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
             return dirUrl
         } else {
             try FileManager.default.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
