@@ -89,8 +89,8 @@ struct SplitGPGEncrypText {
         if linesTotal % splitLineNumber > 0 {
             let splitFileTotal = linesTotal / splitLineNumber + 1
             var lineIndex = 0
-            for i in 0..<splitFileTotal {
-                let filename = "en_\(i + 1).txt"
+            for i in 1...splitFileTotal {
+                let filename = "en_\(i).txt"
                 var fileUrl = targetUrl
                 fileUrl.appendPathComponent(filename)
                 var text = ""
@@ -113,8 +113,8 @@ struct SplitGPGEncrypText {
         } else {
             let splitFileTotal = linesTotal / splitLineNumber
             var lineIndex = 0
-            for i in 0..<splitFileTotal {
-                let filename = "en_\(i + 1).txt"
+            for i in 1...splitFileTotal {
+                let filename = "en_\(i).txt"
                 var fileUrl = targetUrl
                 fileUrl.appendPathComponent(filename)
                 var text = ""
@@ -139,7 +139,7 @@ struct SplitGPGEncrypText {
     public func run() {
         do {
             let fileText = try readTextFromFile()
-            printLog("访问 \(URL(fileURLWithPath: self.readFilePath!).pathComponents.last!)")
+            printLog("访问 \(self.readFilePath!)")
             try splitTextWriteToFiles(text: fileText, separator: "\n")
         } catch SplitGPGEncrypTextError.readFileURLIsNull {
             print("Read file url is null.")
