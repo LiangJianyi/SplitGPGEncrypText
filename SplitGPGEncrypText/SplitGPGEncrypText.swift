@@ -96,7 +96,7 @@ struct SplitGPGEncrypText {
                 var fileUrl = targetUrl
                 fileUrl.appendPathComponent(filename)
                 var text = ""
-                if i < splitFileTotal - 1 {
+                if i < splitFileTotal {
                     for _ in 1...splitLineNumber {
                         text += textLines[lineIndex] + "\n"
                         lineIndex += 1
