@@ -35,6 +35,9 @@ final class SplitGPGEncrypTextTest: XCTestCase {
             XCTAssertNoThrow(try FileManager.default.removeItem(at: URL(fileURLWithPath: item)))
         }
     }
+
+    let inputFilePath = "/Users/jianyiliang/Desktop/demo.txt"
+    let outputDirPath = "/Users/jianyiliang/Desktop/tmp/"
     
     private func sortContentOfDirectory(dirPath: String) -> [String] {
         var arr = try! FileManager.default.contentsOfDirectory(atPath: dirPath)
@@ -47,13 +50,16 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         return arr
     }
     
-    private func combineEncrypText() {
-        
+    private func combineEncrypText() -> String {
+        let encrypFilePaths = self.sortContentOfDirectory(dirPath: self.outputDirPath)
+        var text = ""
+        for path in encrypFilePaths {
+            let s = try! String(contentsOf: URL(fileURLWithPath: path), encoding: .ascii)
+            text += s
+        }
+        return text
     }
 
-    let inputFilePath = "/Users/jianyiliang/Desktop/demo.txt"
-    let outputDirPath = "/Users/jianyiliang/Desktop/tmp/"
-    
     func testSplitGPGEncrypTextRun1() {
         let splitLineNumber = 3
         let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
@@ -62,6 +68,12 @@ final class SplitGPGEncrypTextTest: XCTestCase {
                                                            "printlog",
                                                            String(describing: splitLineNumber)])
         XCTAssertNoThrow(splitGpg.run())
+        
+        // 提取原始文本
+        let sourceFileText = try! String(contentsOf: URL(fileURLWithPath: self.inputFilePath), encoding: .ascii)
+        // 把切割开来的加密文本重新组合为 encrypText，与 sourceFileText 进行对比
+        let encrypText = self.combineEncrypText()
+        XCTAssertTrue(sourceFileText == encrypText)
     }
     
     func testSplitGPGEncrypTextRun2() {
