@@ -1,6 +1,64 @@
 import XCTest
 @testable import SplitGPGEncrypText
 
+// 给 String 添加下标访问
+extension String {
+    public subscript(_ i: Int) -> Character {
+        return self[self.index(self.startIndex, offsetBy: i)]
+    }
+}
+
+struct FilenameId: Comparable {
+    public var filename: String
+    public var id: UInt
+    public init(dirPath: String) {
+        let url = URL(fileURLWithPath: dirPath)
+        let filename = url.lastPathComponent
+        if filename[0] == "e" {
+            if filename[1] == "n" {
+                if filename[2] == "_" {
+                    let (id, lastIndex) = FilenameId.checkDigital(text: filename, startIndex: 3)
+                    if let n = id {
+                        if FilenameId.checkSuffix(text: filename, index: lastIndex, expectSuffix: ".txt") {
+                            self.filename = filename
+                            self.id = n
+                            return
+                        }
+                    }
+                }
+            }
+        }
+        fatalError("\(dirPath) 不是个合法的文件。")
+    }
+    
+    public static func < (lhs: FilenameId, rhs: FilenameId) -> Bool {
+        return lhs.id < rhs.id
+    }
+    
+    private static func checkDigital(text: String, startIndex: Int) -> (id: UInt?, lastIndex: Int) {
+        let digitSymbols: [Character] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        var idText = ""
+        var i = startIndex
+        while startIndex < text.count {
+            if digitSymbols.contains(text[i]) {
+                idText += String(text[i])
+            } else {
+                break
+            }
+            i += 1
+        }
+        return (UInt(idText), i)
+    }
+
+    private static func checkSuffix(text: String, index: Int, expectSuffix: String) -> Bool {
+        var suffix = ""
+        for i in index..<text.count {
+            suffix.append(text[i])
+        }
+        return suffix == expectSuffix
+    }
+}
+
 final class SplitGPGEncrypTextTest: XCTestCase {
     /*
      检测那些目录属于Desktop下的子目录
@@ -41,11 +99,15 @@ final class SplitGPGEncrypTextTest: XCTestCase {
     
     private func sortContentOfDirectory(dirPath: String) -> [String] {
         var arr = try! FileManager.default.contentsOfDirectory(atPath: dirPath)
-        arr.sort()
         arr = arr.map{ e in
             var res = URL(fileURLWithPath: dirPath).appendingPathComponent(e).absoluteString
             res.removeFirst(7)
             return res
+        }
+        arr.sort { (e1, e2) in
+            let fid1 = FilenameId(dirPath: e1)
+            let fid2 = FilenameId(dirPath: e2)
+            return fid1 < fid2
         }
         return arr
     }
@@ -65,7 +127,6 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
                                                            inputFilePath,
                                                            outputDirPath,
-                                                           "printlog",
                                                            String(describing: splitLineNumber)])
         XCTAssertNoThrow(splitGpg.run())
         
@@ -74,15 +135,34 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         // 把切割开来的加密文本重新组合为 encrypText，与 sourceFileText 进行对比
         let encrypText = self.combineEncrypText()
         XCTAssertTrue(sourceFileText == encrypText)
+        
+        // 根据换行符切割成链表看看差异在哪里
+        let sourceLik = sourceFileText.split(separator: "\n")
+        let encrypLik = encrypText.split(separator: "\n")
+        for i in 0..<sourceLik.count {
+            if sourceLik[i] != encrypLik[i] {
+                print("第 \(i + 1)行内容不相同。")
+                print("sourceLik: \(sourceLik[i])")
+                print("encrypLik: \(encrypLik[i])")
+            }
+        }
     }
     
     func testSplitGPGEncrypTextRun2() {
-        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", inputFilePath, outputDirPath, "printlog", "10"])
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
+                                                           inputFilePath,
+                                                           outputDirPath,
+                                                           "printlog",
+                                                           "10"])
         XCTAssertNoThrow(splitGpg.run())
     }
     
     func testSplitGPGEncrypTextRun3() {
-        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText", inputFilePath, outputDirPath, "printlog", "100"])
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
+                                                           inputFilePath,
+                                                           outputDirPath,
+                                                           "printlog",
+                                                           "100"])
         XCTAssertNoThrow(splitGpg.run())
     }
 }
