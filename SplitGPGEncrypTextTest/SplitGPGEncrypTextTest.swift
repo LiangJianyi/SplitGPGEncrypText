@@ -121,6 +121,16 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         }
         return text
     }
+    
+    // 把切割开来的加密文本重新组合与原始文本进行对比
+    private func compareText() {
+        // 提取原始文本并去除换行符
+        let sourceFileText = try! String(contentsOf: URL(fileURLWithPath: self.inputFilePath), encoding: .ascii).filter { $0 != "\n" }
+        // 把切割开来的加密文本重新组合为 encrypText，然后去除换行符，再与 sourceFileText 进行对比
+        let encrypText = self.combineEncrypText().filter { $0 != "\n" }
+        // 检查一下字符编码，是不是编码引起的不相等
+        XCTAssertTrue(sourceFileText == encrypText)
+    }
 
     func testSplitGPGEncrypTextRun1() {
         let splitLineNumber = 3
@@ -129,24 +139,7 @@ final class SplitGPGEncrypTextTest: XCTestCase {
                                                            outputDirPath,
                                                            String(describing: splitLineNumber)])
         XCTAssertNoThrow(splitGpg.run())
-        
-        // 提取原始文本并去除换行符
-        let sourceFileText = try! String(contentsOf: URL(fileURLWithPath: self.inputFilePath), encoding: .ascii).filter { $0 != "\n" }
-        // 把切割开来的加密文本重新组合为 encrypText，然后去除换行符，再与 sourceFileText 进行对比
-        let encrypText = self.combineEncrypText().filter { $0 != "\n" }
-        // 检查一下字符编码，是不是编码引起的不相等
-        XCTAssertTrue(sourceFileText == encrypText)
-        
-        // 根据换行符切割成链表看看差异在哪里
-        let sourceLik = sourceFileText.split(separator: "\n")
-        let encrypLik = encrypText.split(separator: "\n")
-        for i in 0..<sourceLik.count {
-            if sourceLik[i] != encrypLik[i] {
-                print("第 \(i + 1)行内容不相同。")
-                print("sourceLik: \(sourceLik[i])")
-                print("encrypLik: \(encrypLik[i])")
-            }
-        }
+        self.compareText()
     }
     
     func testSplitGPGEncrypTextRun2() {
@@ -156,6 +149,7 @@ final class SplitGPGEncrypTextTest: XCTestCase {
                                                            "printlog",
                                                            "10"])
         XCTAssertNoThrow(splitGpg.run())
+        self.compareText()
     }
     
     func testSplitGPGEncrypTextRun3() {
@@ -165,5 +159,6 @@ final class SplitGPGEncrypTextTest: XCTestCase {
                                                            "printlog",
                                                            "100"])
         XCTAssertNoThrow(splitGpg.run())
+        self.compareText()
     }
 }
