@@ -1,13 +1,6 @@
 import XCTest
 @testable import SplitGPGEncrypText
 
-// 给 String 添加下标访问
-extension String {
-    public subscript(_ i: Int) -> Character {
-        return self[self.index(self.startIndex, offsetBy: i)]
-    }
-}
-
 struct FilenameId: Comparable {
     public var filename: String
     public var id: UInt

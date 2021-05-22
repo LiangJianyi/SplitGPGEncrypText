@@ -1,5 +1,12 @@
 import Foundation
 
+// 给 String 添加下标访问
+extension String {
+    public subscript(_ i: Int) -> Character {
+        return self[self.index(self.startIndex, offsetBy: i)]
+    }
+}
+
 enum SplitGPGEncrypTextError: Error {
     case missingArgument(argumentName: String)
     case missingArguments(argumentNames: [String])
@@ -13,9 +20,9 @@ struct SplitGPGEncrypText {
     private var readFilePath: String?
     private var writeDirPath: String?
     private var printLogSwitch: String?
-    private var splitLineNumbers: Int?
-    
+    private var splitLineNumbers: Int
     private var isPrintLog: Bool = false
+    private var compareWithOriginalText: Bool = false
     
     init(arguments: [String] = CommandLine.arguments) throws {
         switch arguments.count {
@@ -26,27 +33,48 @@ struct SplitGPGEncrypText {
         case 3:
             self.readFilePath = arguments[1]
             self.writeDirPath = arguments[2]
+            self.splitLineNumbers = 3
         case 4:
             self.readFilePath = arguments[1]
             self.writeDirPath = arguments[2]
-            self.printLogSwitch = arguments[3]
+            if let n = Int(arguments[3]) {
+                self.splitLineNumbers = n
+            } else {
+                throw SplitGPGEncrypTextError.invalidArguments(argumentNames: [String](arguments[1..<arguments.count]))
+            }
         case 5:
             self.readFilePath = arguments[1]
             self.writeDirPath = arguments[2]
-            self.printLogSwitch = arguments[3]
-            self.splitLineNumbers = Int(arguments[4])
+            if arguments[3] == "printlog" {
+                self.printLogSwitch = arguments[3]
+            } else {
+                throw SplitGPGEncrypTextError.invalidArguments(argumentNames: [String](arguments[1..<arguments.count]))
+            }
+            if let n = Int(arguments[4]) {
+                self.splitLineNumbers = n
+            } else {
+                throw SplitGPGEncrypTextError.invalidArguments(argumentNames: [String](arguments[1..<arguments.count]))
+            }
         default:
             throw SplitGPGEncrypTextError.invalidArguments(argumentNames: [String](arguments[6..<arguments.count]))
         }
     }
     
     private func printLog(_ text: String) {
-        if self.printLogSwitch == "printlog" {
-            print(text)
+        if let log = self.printLogSwitch {
+            if log == "printlog" {
+                print(text)
+            } else {
+                fatalError("Invalid printLog argument. printLog=\(log)")
+            }
         }
     }
     
     public static func parsePath(path: String) throws -> (basePath: String, targetName: String) {
+        var path = path
+        if path[0] == "~" {
+            path.replaceSubrange(path.utf8.startIndex...path.utf8.startIndex, with: "/Users/\(NSUserName())")
+        }
         let url = URL(fileURLWithPath: path)
         if url.pathComponents.count == 5 {
             if url.pathComponents[0] == "/" {
@@ -87,9 +115,13 @@ struct SplitGPGEncrypText {
         let textLines = text.split(separator: "\n")
         let linesTotal = textLines.count
         let targetUrl = try SplitGPGEncrypText.createDirectory(path: self.writeDirPath!)
-        let splitLineNumber = self.splitLineNumbers ?? 3
-        if linesTotal % splitLineNumber > 0 {
-            let splitFileTotal = linesTotal / splitLineNumber + 1
+
+        if self.splitLineNumbers < 1 {
+            fatalError("Invalid splitLineNumbers argument. splitLineNumbers=\(self.splitLineNumbers)")
+        }
+        
+        if linesTotal % self.splitLineNumbers > 0 {
+            let splitFileTotal = linesTotal / self.splitLineNumbers + 1
             var lineIndex = 0
             for i in 1...splitFileTotal {
                 let filename = "en_\(i).txt"
@@ -97,14 +129,14 @@ struct SplitGPGEncrypText {
                 fileUrl.appendPathComponent(filename)
                 var text = ""
                 if i < splitFileTotal {
-                    for _ in 1...splitLineNumber {
+                    for _ in 1...self.splitLineNumbers {
                         text += textLines[lineIndex] + "\n"
                         lineIndex += 1
                     }
                     printLog("往 \(fileUrl.absoluteString) 写入：\n\(text)")
                     try text.write(to: fileUrl, atomically: false, encoding: .ascii)
                 } else {
-                    for _ in 1...(linesTotal % splitLineNumber) {
+                    for _ in 1...(linesTotal % self.splitLineNumbers) {
                         text += textLines[lineIndex] + "\n"
                         lineIndex += 1
                     }
@@ -113,14 +145,14 @@ struct SplitGPGEncrypText {
                 }
             }
         } else {
-            let splitFileTotal = linesTotal / splitLineNumber
+            let splitFileTotal = linesTotal / self.splitLineNumbers
             var lineIndex = 0
             for i in 1...splitFileTotal {
                 let filename = "en_\(i).txt"
                 var fileUrl = targetUrl
                 fileUrl.appendPathComponent(filename)
                 var text = ""
-                for _ in 1...splitLineNumber {
+                for _ in 1...self.splitLineNumbers {
                     text += textLines[lineIndex] + "\n"
                     lineIndex += 1
                 }
