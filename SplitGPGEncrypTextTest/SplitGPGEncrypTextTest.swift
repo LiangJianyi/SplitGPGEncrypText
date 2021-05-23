@@ -1,10 +1,10 @@
 import XCTest
 @testable import SplitGPGEncrypText
 
-struct FilenameId: Comparable {
-    public var filename: String
-    public var id: UInt
-    public init(dirPath: String) {
+private struct FilenameId: Comparable {
+    var filename: String
+    var id: UInt
+    init(dirPath: String) {
         let url = URL(fileURLWithPath: dirPath)
         let filename = url.lastPathComponent
         if filename[0] == "e" {
@@ -72,6 +72,11 @@ final class SplitGPGEncrypTextTest: XCTestCase {
                       "/Users/\(NSUserName())/Desktop/456/",
                       "/Users/\(NSUserName())/Desktop/aa2dbc",
                       "/Users/\(NSUserName())/Desktop/Desktop/",
+                      "~/Desktop/qaq",
+                      "~/Desktop/onetwothre",
+                      "~/Desktop/四五六/",
+                      "~/Desktop/✈️💥",
+                      "~/Desktop/🪜☁️/",
     ]
     
     func testCreateDirectory() {
@@ -81,9 +86,16 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         for item in validPaths {
             XCTAssertNoThrow(try SplitGPGEncrypText.createDirectory(path: item))
         }
+        func relativePathToAbsolutePath(atPath: inout String) {
+            if atPath[0] == "~" {
+                atPath.replaceSubrange(atPath.utf8.startIndex...atPath.utf8.startIndex, with: "/Users/\(NSUserName())")
+            }
+        }
         for item in validPaths {
-            XCTAssertTrue(FileManager.default.fileExists(atPath: item))
-            XCTAssertNoThrow(try FileManager.default.removeItem(at: URL(fileURLWithPath: item)))
+            var path = item
+            relativePathToAbsolutePath(atPath: &path)
+            XCTAssertTrue(FileManager.default.fileExists(atPath: path))
+            XCTAssertNoThrow(try FileManager.default.removeItem(at: URL(fileURLWithPath: path)))
         }
     }
 
@@ -116,13 +128,13 @@ final class SplitGPGEncrypTextTest: XCTestCase {
     }
     
     // 把切割开来的加密文本重新组合与原始文本进行对比
-    private func compareText() {
+    private func compareText(sourceFilePath: String) -> Bool {
         // 提取原始文本并去除换行符
         let sourceFileText = try! String(contentsOf: URL(fileURLWithPath: self.inputFilePath), encoding: .ascii).filter { $0 != "\n" }
         // 把切割开来的加密文本重新组合为 encrypText，然后去除换行符，再与 sourceFileText 进行对比
         let encrypText = self.combineEncrypText().filter { $0 != "\n" }
         // 检查一下字符编码，是不是编码引起的不相等
-        XCTAssertTrue(sourceFileText == encrypText)
+        return sourceFileText == encrypText
     }
 
     func testSplitGPGEncrypTextRun1() {
@@ -132,7 +144,7 @@ final class SplitGPGEncrypTextTest: XCTestCase {
                                                            outputDirPath,
                                                            String(describing: splitLineNumber)])
         XCTAssertNoThrow(splitGpg.run())
-        self.compareText()
+        XCTAssertTrue(self.compareText(sourceFilePath: inputFilePath))
     }
     
     func testSplitGPGEncrypTextRun2() {
@@ -142,7 +154,7 @@ final class SplitGPGEncrypTextTest: XCTestCase {
                                                            "printlog",
                                                            "10"])
         XCTAssertNoThrow(splitGpg.run())
-        self.compareText()
+        XCTAssertTrue(self.compareText(sourceFilePath: inputFilePath))
     }
     
     func testSplitGPGEncrypTextRun3() {
@@ -152,6 +164,16 @@ final class SplitGPGEncrypTextTest: XCTestCase {
                                                            "printlog",
                                                            "100"])
         XCTAssertNoThrow(splitGpg.run())
-        self.compareText()
+        XCTAssertTrue(self.compareText(sourceFilePath: inputFilePath))
+    }
+    
+    func testSplitGPGEncrypTextRun4() {
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
+                                                           "~/Desktop/en.txt",
+                                                           "~/Desktop/tmp2",
+                                                           "printlog",
+                                                           "10000"])
+        XCTAssertNoThrow(splitGpg.run())
+        XCTAssertTrue(self.compareText(sourceFilePath: "~/Desktop/en.txt"))
     }
 }
