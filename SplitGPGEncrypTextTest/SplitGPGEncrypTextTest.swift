@@ -99,8 +99,8 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         }
     }
 
-    let inputFilePath = "/Users/jianyiliang/Desktop/demo.txt"
-    let outputDirPath = "/Users/jianyiliang/Desktop/tmp/"
+    let inputFilePath = "/Users/\(NSUserName())/Documents/Xcode/Swift/SplitGPGEncrypText/demo.txt"
+    let outputDirPath = "/Users/\(NSUserName())/Desktop/tmp/"
     
     private func sortContentOfDirectory(dirPath: String) -> [String] {
         var arr = try! FileManager.default.contentsOfDirectory(atPath: dirPath)
@@ -175,5 +175,9 @@ final class SplitGPGEncrypTextTest: XCTestCase {
                                                            "10000"])
         XCTAssertNoThrow(splitGpg.run())
         XCTAssertTrue(self.compareText(sourceFilePath: "~/Desktop/en.txt"))
+    }
+    
+    func testPrintCurrentPath() {
+        print(URL(fileURLWithPath: "~"))
     }
 }
