@@ -32,6 +32,7 @@
 		24A1418925FE8032005D2BBD /* SplitGPGEncrypTextTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SplitGPGEncrypTextTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		24A1418B25FE8032005D2BBD /* SplitGPGEncrypTextTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitGPGEncrypTextTest.swift; sourceTree = "<group>"; };
 		24A1418D25FE8032005D2BBD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		79078DC526660C8000ED8A65 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +56,7 @@
 		24A1417125F92653005D2BBD = {
 			isa = PBXGroup;
 			children = (
+				79078DC526660C8000ED8A65 /* .gitignore */,
 				24A1417C25F92653005D2BBD /* SplitGPGEncrypText */,
 				24A1418A25FE8032005D2BBD /* SplitGPGEncrypTextTest */,
 				24A1417B25F92653005D2BBD /* Products */,

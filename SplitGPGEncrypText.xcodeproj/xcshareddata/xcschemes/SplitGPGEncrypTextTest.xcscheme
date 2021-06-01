@@ -21,6 +21,11 @@
                BlueprintName = "SplitGPGEncrypTextTest"
                ReferencedContainer = "container:SplitGPGEncrypText.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "SplitGPGEncrypTextTest/testRun()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
