@@ -99,7 +99,8 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         }
     }
 
-    let inputFilePath = "/Users/\(NSUserName())/Documents/Xcode/Swift/SplitGPGEncrypText/demo.txt"
+    let demoFilePath = "/Users/\(NSUserName())/Documents/Xcode/Swift/SplitGPGEncrypText/demo.txt"
+    let enFilePath = "/Users/\(NSUserName())/Documents/Xcode/Swift/SplitGPGEncrypText/en.txt"
     let outputDirPath = "/Users/\(NSUserName())/Desktop/tmp/"
     
     private func sortContentOfDirectory(dirPath: String) -> [String] {
@@ -130,46 +131,45 @@ final class SplitGPGEncrypTextTest: XCTestCase {
     // 把切割开来的加密文本重新组合与原始文本进行对比
     private func compareText(sourceFilePath: String) -> Bool {
         // 提取原始文本并去除换行符
-        let sourceFileText = try! String(contentsOf: URL(fileURLWithPath: self.inputFilePath), encoding: .ascii).filter { $0 != "\n" }
+        let sourceFileText = try! String(contentsOf: URL(fileURLWithPath: self.demoFilePath), encoding: .ascii).filter { $0 != "\n" }
         // 把切割开来的加密文本重新组合为 encrypText，然后去除换行符，再与 sourceFileText 进行对比
         let encrypText = self.combineEncrypText().filter { $0 != "\n" }
-        // 检查一下字符编码，是不是编码引起的不相等
         return sourceFileText == encrypText
     }
 
     func testSplitGPGEncrypTextRun1() {
         let splitLineNumber = 3
         let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
-                                                           inputFilePath,
+                                                           demoFilePath,
                                                            outputDirPath,
                                                            String(describing: splitLineNumber)])
         XCTAssertNoThrow(splitGpg.run())
-        XCTAssertTrue(self.compareText(sourceFilePath: inputFilePath))
+        XCTAssertTrue(self.compareText(sourceFilePath: demoFilePath))
     }
     
     func testSplitGPGEncrypTextRun2() {
         let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
-                                                           inputFilePath,
+                                                           demoFilePath,
                                                            outputDirPath,
                                                            "printlog",
                                                            "10"])
         XCTAssertNoThrow(splitGpg.run())
-        XCTAssertTrue(self.compareText(sourceFilePath: inputFilePath))
+        XCTAssertTrue(self.compareText(sourceFilePath: demoFilePath))
     }
     
     func testSplitGPGEncrypTextRun3() {
         let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
-                                                           inputFilePath,
+                                                           demoFilePath,
                                                            outputDirPath,
                                                            "printlog",
                                                            "100"])
         XCTAssertNoThrow(splitGpg.run())
-        XCTAssertTrue(self.compareText(sourceFilePath: inputFilePath))
+        XCTAssertTrue(self.compareText(sourceFilePath: demoFilePath))
     }
     
     func testSplitGPGEncrypTextRun4() {
         let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
-                                                           "~/Desktop/en.txt",
+                                                           enFilePath,
                                                            "~/Desktop/tmp2",
                                                            "printlog",
                                                            "10000"])
@@ -180,4 +180,8 @@ final class SplitGPGEncrypTextTest: XCTestCase {
     func testPrintCurrentPath() {
         print(URL(fileURLWithPath: "~"))
     }
+    
+    /*
+     运行完所有的单元测试后需要手动删除桌面目录遗留的 tmp 和 tmp2 文件夹
+     */
 }
