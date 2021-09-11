@@ -1,4 +1,4 @@
-let englishToChinese = [
+let englishToChinese: [Character:Character] = [
     "0":"零",
     "1":"壹",
     "2":"貳",
@@ -63,3 +63,88 @@ let englishToChinese = [
     "Z":"拶",
 ]
 
+let chineseToEnglish: [Character:Character] = [
+    "零":"0",
+    "壹":"1",
+    "貳":"2",
+    "叁":"3",
+    "肆":"4",
+    "伍":"5",
+    "陸":"6",
+    "柒":"7",
+    "捌":"8",
+    "玖":"9",
+    "锕":"a",
+    "币":"b",
+    "车":"c",
+    "吨":"d",
+    "噁":"e",
+    "阀":"f",
+    "膏":"g",
+    "化":"h",
+    "爱":"i",
+    "就":"j",
+    "可":"k",
+    "咯":"l",
+    "姆":"m",
+    "乸":"n",
+    "毮":"o",
+    "瞥":"p",
+    "雀":"q",
+    "绒":"r",
+    "色":"s",
+    "天":"t",
+    "鱼":"u",
+    "吁":"v",
+    "我":"w",
+    "鑫":"x",
+    "潆":"y",
+    "盏":"z",
+    "阿":"A",
+    "滗":"B",
+    "楚":"C",
+    "大":"D",
+    "鹅":"E",
+    "否":"F",
+    "根":"G",
+    "铧":"H",
+    "霭":"I",
+    "精":"J",
+    "钶":"K",
+    "囖":"L",
+    "么":"M",
+    "年":"N",
+    "哦":"O",
+    "皮":"P",
+    "清":"Q",
+    "日":"R",
+    "是":"S",
+    "铜":"T",
+    "雨":"U",
+    "御":"V",
+    "歪":"W",
+    "星":"X",
+    "鸢":"Y",
+    "拶":"Z",
+]
+
+public enum ConvertMode {
+    case englishToChinese
+    case chineseToEnglish
+}
+
+func alaphabetConvertor(_ char: Character, _ mode: ConvertMode) -> Character {
+    if mode == .englishToChinese {
+        if let c = englishToChinese[char] {
+            return c
+        } else {
+            return char
+        }
+    } else {
+        if let c = chineseToEnglish[char] {
+            return c
+        } else {
+            return char
+        }
+    }
+}

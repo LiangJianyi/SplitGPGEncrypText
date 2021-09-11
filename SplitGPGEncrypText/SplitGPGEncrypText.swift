@@ -23,6 +23,7 @@ struct SplitGPGEncrypText {
     private var splitLineNumbers: Int
     private var isPrintLog: Bool = false
     private var compareWithOriginalText: Bool = false
+    private var englishToChinese: Bool = false
     
     init(arguments: [String] = CommandLine.arguments) throws {
         switch arguments.count {
@@ -55,8 +56,26 @@ struct SplitGPGEncrypText {
             } else {
                 throw SplitGPGEncrypTextError.invalidArguments(argumentNames: [String](arguments[1..<arguments.count]))
             }
+        case 6:
+            self.readFilePath = arguments[1]
+            self.writeDirPath = arguments[2]
+            if arguments[3] == "printlog" {
+                self.printLogSwitch = arguments[3]
+            } else {
+                throw SplitGPGEncrypTextError.invalidArguments(argumentNames: [String](arguments[1..<arguments.count]))
+            }
+            if let n = Int(arguments[4]) {
+                self.splitLineNumbers = n
+            } else {
+                throw SplitGPGEncrypTextError.invalidArguments(argumentNames: [String](arguments[1..<arguments.count]))
+            }
+            if arguments[5] == "cn" {
+                self.englishToChinese = true
+            } else {
+                throw SplitGPGEncrypTextError.invalidArguments(argumentNames: [String](arguments[1..<arguments.count]))
+            }
         default:
-            throw SplitGPGEncrypTextError.invalidArguments(argumentNames: [String](arguments[6..<arguments.count]))
+            throw SplitGPGEncrypTextError.invalidArguments(argumentNames: [String](arguments[7..<arguments.count]))
         }
     }
     
@@ -67,6 +86,15 @@ struct SplitGPGEncrypText {
             } else {
                 fatalError("Invalid printLog argument. printLog=\(log)")
             }
+        }
+    }
+    
+    private func writeTextToFile(fileUrl: URL, text: String) throws {
+        if self.englishToChinese {
+            let chinese = String(text.map { alaphabetConvertor($0, .englishToChinese) })
+            try chinese.write(to: fileUrl, atomically: false, encoding: .utf8)
+        } else {
+            try text.write(to: fileUrl, atomically: false, encoding: .ascii)
         }
     }
     
@@ -123,12 +151,12 @@ struct SplitGPGEncrypText {
         if linesTotal % self.splitLineNumbers > 0 {
             let splitFileTotal = linesTotal / self.splitLineNumbers + 1
             var lineIndex = 0
-            for i in 1...splitFileTotal {
-                let filename = "en_\(i).txt"
+            for fileID in 1...splitFileTotal {
+                let filename = "en_\(fileID).txt"
                 var fileUrl = targetUrl
                 fileUrl.appendPathComponent(filename)
                 var text = ""
-                if i < splitFileTotal {
+                if fileID < splitFileTotal {
                     for _ in 1...self.splitLineNumbers {
                         text += textLines[lineIndex] + "\n"
                         lineIndex += 1
@@ -147,8 +175,8 @@ struct SplitGPGEncrypText {
         } else {
             let splitFileTotal = linesTotal / self.splitLineNumbers
             var lineIndex = 0
-            for i in 1...splitFileTotal {
-                let filename = "en_\(i).txt"
+            for fileID in 1...splitFileTotal {
+                let filename = "en_\(fileID).txt"
                 var fileUrl = targetUrl
                 fileUrl.appendPathComponent(filename)
                 var text = ""
