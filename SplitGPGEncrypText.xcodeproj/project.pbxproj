@@ -11,8 +11,8 @@
 		241D7BDC2600B23600E90A74 /* SplitGPGEncrypText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241D7BDA2600B23600E90A74 /* SplitGPGEncrypText.swift */; };
 		24A1417E25F92653005D2BBD /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A1417D25F92653005D2BBD /* main.swift */; };
 		24A1418C25FE8032005D2BBD /* SplitGPGEncrypTextTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A1418B25FE8032005D2BBD /* SplitGPGEncrypTextTest.swift */; };
-		790E364926EB88E400E65654 /* EnglishToChinese.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790E364826EB88E400E65654 /* EnglishToChinese.swift */; };
-		790E364A26EB88E400E65654 /* EnglishToChinese.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790E364826EB88E400E65654 /* EnglishToChinese.swift */; };
+		790E364926EB88E400E65654 /* alaphabetConvertor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790E364826EB88E400E65654 /* alaphabetConvertor.swift */; };
+		790E364A26EB88E400E65654 /* alaphabetConvertor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790E364826EB88E400E65654 /* alaphabetConvertor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,7 +35,7 @@
 		24A1418B25FE8032005D2BBD /* SplitGPGEncrypTextTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitGPGEncrypTextTest.swift; sourceTree = "<group>"; };
 		24A1418D25FE8032005D2BBD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		79078DC526660C8000ED8A65 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		790E364826EB88E400E65654 /* EnglishToChinese.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishToChinese.swift; sourceTree = "<group>"; };
+		790E364826EB88E400E65654 /* alaphabetConvertor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = alaphabetConvertor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,7 +80,7 @@
 			children = (
 				24A1417D25F92653005D2BBD /* main.swift */,
 				241D7BDA2600B23600E90A74 /* SplitGPGEncrypText.swift */,
-				790E364826EB88E400E65654 /* EnglishToChinese.swift */,
+				790E364826EB88E400E65654 /* alaphabetConvertor.swift */,
 			);
 			path = SplitGPGEncrypText;
 			sourceTree = "<group>";
@@ -184,7 +184,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				24A1417E25F92653005D2BBD /* main.swift in Sources */,
-				790E364926EB88E400E65654 /* EnglishToChinese.swift in Sources */,
+				790E364926EB88E400E65654 /* alaphabetConvertor.swift in Sources */,
 				241D7BDB2600B23600E90A74 /* SplitGPGEncrypText.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -194,7 +194,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				24A1418C25FE8032005D2BBD /* SplitGPGEncrypTextTest.swift in Sources */,
-				790E364A26EB88E400E65654 /* EnglishToChinese.swift in Sources */,
+				790E364A26EB88E400E65654 /* alaphabetConvertor.swift in Sources */,
 				241D7BDC2600B23600E90A74 /* SplitGPGEncrypText.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

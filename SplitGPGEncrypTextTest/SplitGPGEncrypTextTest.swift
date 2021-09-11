@@ -101,21 +101,22 @@ final class SplitGPGEncrypTextTest: XCTestCase {
 
     let demoFilePath = "/Users/\(NSUserName())/Documents/Xcode/Swift/SplitGPGEncrypText/demo.txt"
     let enFilePath = "/Users/\(NSUserName())/Documents/Xcode/Swift/SplitGPGEncrypText/en.txt"
-    let outputDirPath = "/Users/\(NSUserName())/Desktop/tmp/"
+    let testResourceDirPath = "/Users/\(NSUserName())/Documents/Xcode/Swift/SplitGPGEncrypText/Test Resource"
+    let outputDirPath = "/Users/\(NSUserName())/Desktop/tmp2/"
     
     private func sortContentOfDirectory(dirPath: String) -> [String] {
-        var arr = try! FileManager.default.contentsOfDirectory(atPath: dirPath)
-        arr = arr.map{ e in
-            var res = URL(fileURLWithPath: dirPath).appendingPathComponent(e).absoluteString
+        var filesArray = try! FileManager.default.contentsOfDirectory(atPath: dirPath)
+        filesArray = filesArray.map{ filename in
+            var res = URL(fileURLWithPath: dirPath).appendingPathComponent(filename).absoluteString
             res.removeFirst(7)
             return res
         }
-        arr.sort { (e1, e2) in
+        filesArray.sort { (e1, e2) in
             let fid1 = FilenameId(dirPath: e1)
             let fid2 = FilenameId(dirPath: e2)
             return fid1 < fid2
         }
-        return arr
+        return filesArray
     }
     
     private func combineEncrypText() -> String {
@@ -129,11 +130,17 @@ final class SplitGPGEncrypTextTest: XCTestCase {
     }
     
     // 把切割开来的加密文本重新组合与原始文本进行对比
-    private func compareText(sourceFilePath: String) -> Bool {
+    private func compareText(sourceFilePath: String, isChinese: Bool = false) -> Bool {
         // 提取原始文本并去除换行符
-        let sourceFileText = try! String(contentsOf: URL(fileURLWithPath: self.demoFilePath), encoding: .ascii).filter { $0 != "\n" }
+        let sourceFileText = try! String(contentsOf: URL(fileURLWithPath: sourceFilePath), encoding: .ascii).filter { $0 != "\n" }
         // 把切割开来的加密文本重新组合为 encrypText，然后去除换行符，再与 sourceFileText 进行对比
-        let encrypText = self.combineEncrypText().filter { $0 != "\n" }
+        var encrypText = ""
+        if isChinese {
+            // 中文密文转换为PGP密文
+            encrypText = String(self.combineEncrypText().filter { $0 != "\n" }.map { alaphabetConvertor($0, ConvertMode.chineseToEnglish) })
+        } else {
+            encrypText = self.combineEncrypText().filter { $0 != "\n" }
+        }
         return sourceFileText == encrypText
     }
 
@@ -174,11 +181,18 @@ final class SplitGPGEncrypTextTest: XCTestCase {
                                                            "printlog",
                                                            "10000"])
         XCTAssertNoThrow(splitGpg.run())
-        XCTAssertTrue(self.compareText(sourceFilePath: "~/Desktop/en.txt"))
+        XCTAssertTrue(self.compareText(sourceFilePath: enFilePath))
     }
     
-    func testPrintCurrentPath() {
-        print(URL(fileURLWithPath: "~"))
+    func testSplitGPGEncrypTextRun5() {
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
+                                                           enFilePath,
+                                                           outputDirPath,
+                                                           "printlog",
+                                                           "3000",
+                                                           "cn"])
+        XCTAssertNoThrow(splitGpg.run())
+        XCTAssertTrue(self.compareText(sourceFilePath: enFilePath))
     }
     
     /*
