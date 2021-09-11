@@ -39,7 +39,7 @@ let englishToChinese: [Character:Character] = [
     "B":"滗",
     "C":"楚",
     "D":"大",
-    "E":"钶",
+    "E":"鹅",
     "F":"否",
     "G":"根",
     "H":"铧",

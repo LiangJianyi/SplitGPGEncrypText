@@ -202,6 +202,12 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         XCTAssertTrue(self.compareText(sourceFilePath: enFilePath, isChinese: true))
     }
     
+    func testAlaphabetConvertor() {
+        for e_c in englishToChinese {
+            XCTAssertTrue(chineseToEnglish[e_c.value]! == e_c.key)
+        }
+    }
+    
     /*
      运行完所有的单元测试后需要手动删除桌面目录遗留的 tmp 和 tmp2 文件夹
      */
