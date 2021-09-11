@@ -192,7 +192,7 @@ final class SplitGPGEncrypTextTest: XCTestCase {
                                                            "3000",
                                                            "cn"])
         XCTAssertNoThrow(splitGpg.run())
-        XCTAssertTrue(self.compareText(sourceFilePath: enFilePath))
+        XCTAssertTrue(self.compareText(sourceFilePath: enFilePath, isChinese: true))
     }
     
     /*

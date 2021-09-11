@@ -162,14 +162,14 @@ struct SplitGPGEncrypText {
                         lineIndex += 1
                     }
                     printLog("往 \(fileUrl.absoluteString) 写入：\n\(text)")
-                    try text.write(to: fileUrl, atomically: false, encoding: .ascii)
+                    try self.writeTextToFile(fileUrl: fileUrl, text: text)
                 } else {
                     for _ in 1...(linesTotal % self.splitLineNumbers) {
                         text += textLines[lineIndex] + "\n"
                         lineIndex += 1
                     }
                     printLog("往 \(fileUrl.absoluteString) 写入：\n\(text)")
-                    try text.write(to: fileUrl, atomically: false, encoding: .ascii)
+                    try self.writeTextToFile(fileUrl: fileUrl, text: text)
                 }
             }
         } else {
@@ -185,7 +185,7 @@ struct SplitGPGEncrypText {
                     lineIndex += 1
                 }
                 printLog("往 \(fileUrl.absoluteString) 写入：\n\(text)")
-                try text.write(to: fileUrl, atomically: false, encoding: .ascii)
+                try self.writeTextToFile(fileUrl: fileUrl, text: text)
             }
         }
     }
