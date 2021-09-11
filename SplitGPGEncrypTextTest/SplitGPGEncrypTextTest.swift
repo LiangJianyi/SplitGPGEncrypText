@@ -119,11 +119,14 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         return filesArray
     }
     
-    private func combineEncrypText() -> String {
+    private func combineEncrypText(isChinese: Bool) -> String {
         let encrypFilePaths = self.sortContentOfDirectory(dirPath: self.outputDirPath)
         var text = ""
         for path in encrypFilePaths {
-            let s = try! String(contentsOf: URL(fileURLWithPath: path), encoding: .ascii)
+            let s = try! String(
+                contentsOf: URL(fileURLWithPath: path),
+                encoding: isChinese ? .utf8 : .ascii
+            )
             text += s
         }
         return text
@@ -137,9 +140,13 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         var encrypText = ""
         if isChinese {
             // 中文密文转换为PGP密文
-            encrypText = String(self.combineEncrypText().filter { $0 != "\n" }.map { alaphabetConvertor($0, ConvertMode.chineseToEnglish) })
+            encrypText = String(
+                self.combineEncrypText(isChinese: true)
+                    .filter { $0 != "\n" }
+                    .map { alaphabetConvertor($0, ConvertMode.chineseToEnglish) }
+            )
         } else {
-            encrypText = self.combineEncrypText().filter { $0 != "\n" }
+            encrypText = self.combineEncrypText(isChinese: false).filter { $0 != "\n" }
         }
         return sourceFileText == encrypText
     }
