@@ -20,7 +20,6 @@ enum SplitGPGEncrypTextError: Error {
 struct SplitGPGEncrypText {
     private var readFilePath: String?
     private var writeDirPath: String?
-    private var printLogSwitch: String?
     private var splitLineNumbers: Int?
     private var isPrintLog: Bool = false
     private var englishToChinese: Bool = false
@@ -44,12 +43,8 @@ struct SplitGPGEncrypText {
     }
     
     private func printLog(_ text: String) {
-        if let log = self.printLogSwitch {
-            if log == "printlog" {
-                print(text)
-            } else {
-                fatalError("Invalid printLog argument. printLog=\(log)")
-            }
+        if self.isPrintLog {
+            print(text)
         }
     }
     
