@@ -202,6 +202,27 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         XCTAssertTrue(self.compareText(sourceFilePath: enFilePath, isChinese: true))
     }
     
+    func testSplitGPGEncrypTextRun6() {
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
+                                                           enFilePath,
+                                                           outputDirPath,
+                                                           "cn",
+                                                           "3000"])
+        XCTAssertNoThrow(splitGpg.run())
+        XCTAssertTrue(self.compareText(sourceFilePath: enFilePath, isChinese: true))
+    }
+    
+    func testSplitGPGEncrypTextRun7() {
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
+                                                           enFilePath,
+                                                           outputDirPath,
+                                                           "15300",
+                                                           "cn"])
+        XCTAssertNoThrow(splitGpg.run())
+        XCTAssertTrue(self.compareText(sourceFilePath: enFilePath, isChinese: true))
+    }
+
+    
     func testAlaphabetConvertor() {
         for e_c in englishToChinese {
             XCTAssertTrue(chineseToEnglish[e_c.value]! == e_c.key)
