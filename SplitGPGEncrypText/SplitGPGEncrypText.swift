@@ -137,6 +137,51 @@ struct SplitGPGEncrypText {
         }
     }
     
+    public static func readFileLineByLine(fileUrl: URL) -> ((String) -> Void) -> Void {
+        // make sure the file exists
+        guard FileManager.default.fileExists(atPath: fileUrl.path) else {
+            preconditionFailure("file expected at \(fileUrl.absoluteString) is missing")
+        }
+
+        // open the file for reading
+        // note:  user should be prompted the first time to allow reading from this location
+        guard let filePointer:UnsafeMutablePointer<FILE> = fopen(fileUrl.path,"r") else {
+            preconditionFailure("Could not open file at \(fileUrl.absoluteString)")
+        }
+
+        // a pointer to a null-terminated, UTF-8 encoded sequence of bytes
+        var lineByteArrayPointer: UnsafeMutablePointer<CChar>? = nil
+
+        // the smallest multiple of 16 that will fit the byte array for this line
+        var lineCap: Int = 0
+
+        // initial iteration
+        var bytesReader = getline(&lineByteArrayPointer, &lineCap, filePointer)
+        
+        return { (closure: (String) -> Void) in
+            while (bytesReader > 0) {
+                // note: this translates the sequence of bytes to a string using UTF-8 interpretation
+                let lineAsString = String.init(cString:lineByteArrayPointer!)
+                
+                // do whatever you need to do with this single line of text
+                // for debugging, can print it
+            //    print("bytesReader: \(bytesReader), lineCap: \(lineCap) line: \(lineAsString)")
+                closure(lineAsString)
+                
+                // updates number of bytes read, for the next iteration
+                bytesReader = getline(&lineByteArrayPointer, &lineCap, filePointer)
+            }
+            
+            do {
+                // remember to close the file when done
+                #if DEBUG
+                print("Close the file: \(fileUrl.path)")
+                #endif
+                fclose(filePointer)
+            }
+        }
+    }
+    
     public func splitTextWriteToFiles(text: String, separator: Character) throws {
         let textLines = text.split(separator: "\n")
         let linesTotal = textLines.count
