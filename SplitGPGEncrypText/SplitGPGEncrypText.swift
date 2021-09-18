@@ -137,7 +137,7 @@ struct SplitGPGEncrypText {
         }
     }
     
-    public func readFileLineByLineAndSplitTextWriteToFiles() {
+    public func readFileLineByLineAndSplitTextWriteToFiles() throws {
         // 确保文件存在
         guard FileManager.default.fileExists(atPath: self.readFilePath!) else {
             preconditionFailure("file expected at \(self.readFilePath!) is missing")
@@ -160,6 +160,9 @@ struct SplitGPGEncrypText {
 
         // the smallest multiple of 16 that will fit the byte array for this line
         var lineCap: Int = 0
+        
+        // 创建切割文件目录
+        let writeDirUrl = try SplitGPGEncrypText.createDirectory(path: self.writeDirPath!)
 
         // 初始化迭代器
         var bytesReader = getline(&lineByteArrayPointer, &lineCap, filePointer)
@@ -170,21 +173,18 @@ struct SplitGPGEncrypText {
         while (bytesReader > 0) {
             // note: this translates the sequence of bytes to a string using UTF-8 interpretation
             let currentLine = String(cString: lineByteArrayPointer!)
-            let filename = URL(fileURLWithPath: self.writeDirPath!).appendingPathComponent("en_\(fileId)")
+            let filename = writeDirUrl.appendingPathComponent("en_\(fileId).txt")
             if FileManager.default.fileExists(atPath: filename.path) {
-                if let fileHandle = try? FileHandle(forWritingTo: filename) {
-                    defer {
-                        fileHandle.closeFile()
-                    }
-                    fileHandle.seekToEndOfFile()
-                    fileHandle.write(currentLine.data(using: .utf8)!)
-                    printLog(currentLine)
-                } else {
-                    fatalError("Get the FileHandle of \(filename) raise a error.")
+                let fileHandle = try FileHandle(forWritingTo: filename)
+                defer {
+                    fileHandle.closeFile()
                 }
+                fileHandle.seekToEndOfFile()
+                fileHandle.write(currentLine.data(using: .utf8)!)
+                printLog(currentLine)
             } else {
                 print("往 \(filename) 写入\n")
-                try? currentLine.write(to: filename, atomically: true, encoding: .utf8)
+                try currentLine.write(to: filename, atomically: true, encoding: .utf8)
             }
             
             // 更新读取的字节数，用于下一次迭代
@@ -260,8 +260,7 @@ struct SplitGPGEncrypText {
         do {
             // 如果文本文件大于1GB，采用逐行读取
             if try FileManager.default.attributesOfItem(atPath: self.readFilePath!)[.size] as! UInt64 > 1000000000 {
-                let targetUrl = try SplitGPGEncrypText.createDirectory(path: self.writeDirPath!)
-                self.readFileLineByLineAndSplitTextWriteToFiles()
+                try self.readFileLineByLineAndSplitTextWriteToFiles()
             } else {
                 let fileText = try readTextFromFile()
                 print("读取 \(self.readFilePath!)")
