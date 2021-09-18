@@ -137,7 +137,7 @@ struct SplitGPGEncrypText {
         }
     }
     
-    public func readFileLineByLine() {
+    public func readFileLineByLineAndSplitTextWriteToFiles() {
         // 确保文件存在
         guard FileManager.default.fileExists(atPath: self.readFilePath!) else {
             preconditionFailure("file expected at \(self.readFilePath!) is missing")
@@ -166,6 +166,7 @@ struct SplitGPGEncrypText {
         
         var fileId = 1
         var lineNumber = 1
+        // 逐行写入
         while (bytesReader > 0) {
             // note: this translates the sequence of bytes to a string using UTF-8 interpretation
             let currentLine = String(cString: lineByteArrayPointer!)
@@ -177,10 +178,12 @@ struct SplitGPGEncrypText {
                     }
                     fileHandle.seekToEndOfFile()
                     fileHandle.write(currentLine.data(using: .utf8)!)
+                    printLog(currentLine)
                 } else {
                     fatalError("Get the FileHandle of \(filename) raise a error.")
                 }
             } else {
+                print("往 \(filename) 写入\n")
                 try? currentLine.write(to: filename, atomically: true, encoding: .utf8)
             }
             
@@ -258,17 +261,7 @@ struct SplitGPGEncrypText {
             // 如果文本文件大于1GB，采用逐行读取
             if try FileManager.default.attributesOfItem(atPath: self.readFilePath!)[.size] as! UInt64 > 1000000000 {
                 let targetUrl = try SplitGPGEncrypText.createDirectory(path: self.writeDirPath!)
-                Self.readFileLineByLine(fileUrl: URL(fileURLWithPath: self.readFilePath!))({ line in
-                    var lineNumber = 0
-                    while true {
-                        lineNumber += 1
-                        let filename = "en_\(lineNumber).txt"
-                        try! self.writeTextToFile(
-                            fileUrl: targetUrl.appendingPathComponent(filename),
-                            text: line
-                        )
-                    }
-                })
+                self.readFileLineByLineAndSplitTextWriteToFiles()
             } else {
                 let fileText = try readTextFromFile()
                 print("读取 \(self.readFilePath!)")
