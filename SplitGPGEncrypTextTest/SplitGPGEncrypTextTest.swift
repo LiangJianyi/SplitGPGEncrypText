@@ -221,6 +221,16 @@ final class SplitGPGEncrypTextTest: XCTestCase {
         XCTAssertNoThrow(splitGpg.run())
         XCTAssertTrue(self.compareText(sourceFilePath: enFilePath, isChinese: true))
     }
+    
+    func testReadFileLineByLineAndSplitTextWriteToFiles() {
+        let en = "/Users/\(NSUserName())/Documents/Xcode/Swift/SplitGPGEncrypText/test2.txt"
+        let splitGpg = try! SplitGPGEncrypText(arguments: ["SplitGPGEncrypText",
+                                                           en,
+                                                           outputDirPath,
+                                                           "20300"])
+        XCTAssertNoThrow(try! splitGpg.readFileLineByLineAndSplitTextWriteToFiles())
+        XCTAssertTrue(self.compareText(sourceFilePath: en, isChinese: false))
+    }
 
     
     func testAlaphabetConvertor() {

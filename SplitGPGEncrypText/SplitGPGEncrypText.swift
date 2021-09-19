@@ -45,6 +45,7 @@ struct SplitGPGEncrypText {
     private func printLog(_ text: String) {
         if self.isPrintLog {
             print(text)
+            print()
         }
     }
     
@@ -150,7 +151,7 @@ struct SplitGPGEncrypText {
         defer {
             // 关闭文件流
             #if DEBUG
-            print("Close the file: \(fileUrl.path)")
+            print("Close the file: \(self.readFilePath!)")
             #endif
             fclose(filePointer)
         }
@@ -169,14 +170,18 @@ struct SplitGPGEncrypText {
         
         var fileId = 1
         var lineNumber = 1
+        var filename = writeDirUrl.appendingPathComponent("en_\(fileId).txt")
         // 逐行写入
-        while (bytesReader > 0) {
+        while bytesReader > 0 {
             // note: this translates the sequence of bytes to a string using UTF-8 interpretation
             let currentLine = String(cString: lineByteArrayPointer!)
-            let filename = writeDirUrl.appendingPathComponent("en_\(fileId).txt")
             if FileManager.default.fileExists(atPath: filename.path) {
                 let fileHandle = try FileHandle(forWritingTo: filename)
                 defer {
+                    // 关闭文件句柄
+                    #if DEBUG
+                    print("Close the file handler: \(filename)")
+                    #endif
                     fileHandle.closeFile()
                 }
                 fileHandle.seekToEndOfFile()
@@ -196,6 +201,7 @@ struct SplitGPGEncrypText {
             } else {
                 lineNumber = 1
                 fileId += 1
+                filename = writeDirUrl.appendingPathComponent("en_\(fileId).txt")
             }
         }
     }
