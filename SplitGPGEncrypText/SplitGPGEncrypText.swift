@@ -128,6 +128,8 @@ struct SplitGPGEncrypText {
         let (basePath, directoryName) = try parsePath(path: path)
         var dirUrl = URL(fileURLWithPath: basePath, isDirectory: true)
         dirUrl.appendPathComponent(directoryName, isDirectory: true)
+        
+        // 如果输出目录已经存在，则删除掉重新创建
         if FileManager.default.fileExists(atPath: dirUrl.path) {
             try FileManager.default.removeItem(at: dirUrl)
             try FileManager.default.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
@@ -174,7 +176,7 @@ struct SplitGPGEncrypText {
         // 逐行写入
         while bytesReader > 0 {
             // note: this translates the sequence of bytes to a string using UTF-8 interpretation
-            let currentLine = String(cString: lineByteArrayPointer!)
+            let currentLine = String(cString: lineByteArrayPointer!, encoding: .ascii)!
             if FileManager.default.fileExists(atPath: filename.path) {
                 let fileHandle = try FileHandle(forWritingTo: filename)
                 defer {
@@ -185,7 +187,7 @@ struct SplitGPGEncrypText {
                     fileHandle.closeFile()
                 }
                 fileHandle.seekToEndOfFile()
-                fileHandle.write(currentLine.data(using: .utf8)!)
+                fileHandle.write(currentLine.data(using: .ascii)!)
                 printLog(currentLine)
             } else {
                 print("往 \(filename) 写入\n")
