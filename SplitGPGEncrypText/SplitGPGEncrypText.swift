@@ -140,15 +140,16 @@ struct SplitGPGEncrypText {
         }
     }
     
+    /// 逐行读取文本并根据指定的步长（self.splitLineNumbers）切割文本然后写入到指定目录（self.writeDirPath）
     public func readFileLineByLineAndSplitTextWriteToFiles() throws {
         // 确保文件存在
         guard FileManager.default.fileExists(atPath: self.readFilePath!) else {
-            preconditionFailure("file expected at \(self.readFilePath!) is missing")
+            fatalError("file expected at \(self.readFilePath!) is missing")
         }
 
         // 使用系统调用 fopen 打开并读取文件（参数 r 为读取 flag），返回一个文件指针
         guard let filePointer:UnsafeMutablePointer<FILE> = fopen(self.readFilePath!, "r") else {
-            preconditionFailure("Could not open file at \(self.readFilePath!)")
+            fatalError("Could not open file at \(self.readFilePath!)")
         }
         defer {
             // 关闭文件流
