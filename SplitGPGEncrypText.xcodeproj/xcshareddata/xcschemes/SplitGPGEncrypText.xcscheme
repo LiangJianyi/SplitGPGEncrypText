@@ -28,6 +28,16 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "24A1418825FE8032005D2BBD"
+               BuildableName = "SplitGPGEncrypTextTest.xctest"
+               BlueprintName = "SplitGPGEncrypTextTest"
+               ReferencedContainer = "container:SplitGPGEncrypText.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

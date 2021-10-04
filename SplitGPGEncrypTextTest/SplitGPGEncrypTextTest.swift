@@ -101,7 +101,6 @@ final class SplitGPGEncrypTextTest: XCTestCase {
 
     let demoFilePath = "/Users/\(NSUserName())/Documents/Xcode/Swift/SplitGPGEncrypText/demo.txt"
     let enFilePath = "/Users/\(NSUserName())/Documents/Xcode/Swift/SplitGPGEncrypText/en.txt"
-    let testResourceDirPath = "/Users/\(NSUserName())/Documents/Xcode/Swift/SplitGPGEncrypText/Test Resource"
     let outputDirPath = "/Users/\(NSUserName())/Desktop/tmp2/"
     
     private func sortContentOfDirectory(dirPath: String) -> [String] {

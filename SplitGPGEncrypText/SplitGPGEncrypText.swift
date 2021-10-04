@@ -52,11 +52,9 @@ struct SplitGPGEncrypText {
     private func writeTextToFile(fileUrl: URL, text: String) throws {
         if self.englishToChinese {
             let chinese = String(text.map { alaphabetConvertor($0, .englishToChinese) })
-            print("往 \(fileUrl.absoluteString) 写入\n")
             printLog(chinese)
             try chinese.write(to: fileUrl, atomically: false, encoding: .utf8)
         } else {
-            print("往 \(fileUrl.absoluteString) 写入\n")
             printLog(text)
             try text.write(to: fileUrl, atomically: false, encoding: .ascii)
         }
@@ -225,20 +223,20 @@ struct SplitGPGEncrypText {
                 let filename = "en_\(fileID).txt"
                 var fileUrl = targetUrl
                 fileUrl.appendPathComponent(filename)
+                print("往 \(fileUrl.absoluteString) 写入\n")
                 var text = ""
                 if fileID < splitFileTotal {
                     for _ in 1...self.splitLineNumbers! {
                         text += textLines[lineIndex] + "\n"
                         lineIndex += 1
                     }
-                    try self.writeTextToFile(fileUrl: fileUrl, text: text)
                 } else {
                     for _ in 1...(linesTotal % self.splitLineNumbers!) {
                         text += textLines[lineIndex] + "\n"
                         lineIndex += 1
                     }
-                    try self.writeTextToFile(fileUrl: fileUrl, text: text)
                 }
+                try self.writeTextToFile(fileUrl: fileUrl, text: text)
             }
         } else {
             let splitFileTotal = linesTotal / self.splitLineNumbers!
