@@ -142,7 +142,7 @@ struct SplitGPGEncrypText {
     public func readFileLineByLineAndSplitTextWriteToFiles() throws {
         // 确保文件存在
         guard FileManager.default.fileExists(atPath: self.readFilePath!) else {
-            fatalError("file expected at \(self.readFilePath!) is missing")
+            throw SplitGPGEncrypTextError.invalidFileUrl(path: self.readFilePath!)
         }
 
         // 使用系统调用 fopen 打开并读取文件（参数 r 为读取 flag），返回一个文件指针
@@ -171,17 +171,17 @@ struct SplitGPGEncrypText {
         
         var fileId = 1
         var lineNumber = 1
-        var filename = writeDirUrl.appendingPathComponent("en_\(fileId).txt")
+        var fileUrl = writeDirUrl.appendingPathComponent("en_\(fileId).txt")
         // 逐行写入
         while bytesReader > 0 {
             // note: this translates the sequence of bytes to a string using UTF-8 interpretation
             let currentLine = String(cString: lineByteArrayPointer!, encoding: .ascii)!
-            if FileManager.default.fileExists(atPath: filename.path) {
-                let fileHandle = try FileHandle(forWritingTo: filename)
+            if FileManager.default.fileExists(atPath: fileUrl.path) {
+                let fileHandle = try FileHandle(forWritingTo: fileUrl)
                 defer {
                     // 关闭文件句柄
                     #if DEBUG
-                    print("Close the file handler: \(filename)")
+                    print("Close the file handler: \(fileUrl)")
                     #endif
                     fileHandle.closeFile()
                 }
@@ -189,8 +189,10 @@ struct SplitGPGEncrypText {
                 fileHandle.write(currentLine.data(using: .ascii)!)
                 printLog(currentLine)
             } else {
-                print("往 \(filename) 写入\n")
-                try currentLine.write(to: filename, atomically: true, encoding: .utf8)
+                print("往 \(fileUrl) 写入\n")
+                // 无需开启 atomically 进行原子写入，
+                // 当前 else 分支属于该文件暂不存在
+                try currentLine.write(to: fileUrl, atomically: false, encoding: .utf8)
             }
             
             // 更新读取的字节数，用于下一次迭代
@@ -202,7 +204,7 @@ struct SplitGPGEncrypText {
             } else {
                 lineNumber = 1
                 fileId += 1
-                filename = writeDirUrl.appendingPathComponent("en_\(fileId).txt")
+                fileUrl = writeDirUrl.appendingPathComponent("en_\(fileId).txt")
             }
         }
     }
