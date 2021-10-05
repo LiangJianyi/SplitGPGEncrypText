@@ -195,7 +195,7 @@ struct SplitGPGEncrypText {
                 try currentLine.write(to: fileUrl, atomically: false, encoding: .utf8)
             }
             
-            // 更新读取的字节数，用于下一次迭代
+            // 读取下一行内容
             bytesReader = getline(&lineByteArrayPointer, &lineCap, filePointer)
             
             // 更新行数和文件编号
