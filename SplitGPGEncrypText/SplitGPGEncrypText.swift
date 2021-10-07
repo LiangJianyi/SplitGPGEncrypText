@@ -268,6 +268,7 @@ struct SplitGPGEncrypText {
     public func run() {
         do {
             // 如果文本文件大于1GB，采用逐行读取
+            // Reference: https://stackoverflow.com/a/62112007/10975306
             if try FileManager.default.attributesOfItem(atPath: self.readFilePath!)[.size] as! UInt64 > 1000000000 {
                 try self.readFileLineByLineAndSplitTextWriteToFiles()
             } else {
