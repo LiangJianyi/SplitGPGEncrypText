@@ -97,6 +97,7 @@ struct SplitGPGEncrypText {
     
     public static func parsePath(path: String) throws -> (basePath: String, targetName: String) {
         var path = path
+        // macOS 10.12 之后可使用 FileManager.default.homeDirectoryForCurrentUser.path
         if path[0] == "~" {
             path.replaceSubrange(path.utf8.startIndex...path.utf8.startIndex, with: "/Users/\(NSUserName())")
         }
